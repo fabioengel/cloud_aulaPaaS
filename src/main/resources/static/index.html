@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <title>Contador</title>
+    <style>
+        /* Reset básico */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body, html {
+            height: 100%;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 40px 60px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            text-align: center;
+            max-width: 320px;
+            width: 100%;
+        }
+
+        h1 {
+            font-weight: 700;
+            margin-bottom: 20px;
+            font-size: 2.8rem;
+            letter-spacing: 2px;
+        }
+
+        #status {
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            min-height: 20px;
+            color: #ccc;
+            font-style: italic;
+            transition: color 0.3s ease;
+        }
+
+        #contador {
+            font-size: 5rem;
+            font-weight: 900;
+            margin-bottom: 35px;
+            letter-spacing: 4px;
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
+        }
+
+        button {
+            background-color: #4caf50;
+            border: none;
+            padding: 15px 35px;
+            font-size: 1.3rem;
+            border-radius: 50px;
+            cursor: pointer;
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            user-select: none;
+        }
+
+        button:hover {
+            background-color: #45a049;
+            transform: translateY(-3px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        @media (max-width: 400px) {
+            .container {
+                padding: 30px 20px;
+                max-width: 90vw;
+            }
+            h1 {
+                font-size: 2rem;
+            }
+            #contador {
+                font-size: 4rem;
+            }
+            button {
+                padding: 12px 28px;
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Contador</h1>
+        <div id="status">Verificando conexão...</div>
+        <div id="contador">...</div>
+        <button onclick="incrementar()">Incrementar</button>
+    </div>
+
+    <script>
+        async function carregarStatus() {
+            try {
+                const res = await fetch('/status');
+                const data = await res.json();
+                const statusEl = document.getElementById('status');
+                if (data.status === 'ok') {
+                    statusEl.style.color = '#a6d8a6'; // verde suave
+                } else {
+                    statusEl.style.color = '#d8a6a6'; // vermelho suave
+                }
+                statusEl.textContent = data.mensagem;
+            } catch (e) {
+                const statusEl = document.getElementById('status');
+                statusEl.style.color = '#d8a6a6';
+                statusEl.textContent = 'Erro ao verificar conexão.';
+            }
+        }
+
+        async function carregarContador() {
+            const res = await fetch('/contador');
+            const data = await res.json();
+            document.getElementById('contador').textContent = data.valor;
+        }
+
+        async function incrementar() {
+            const res = await fetch('/contador/incrementar', { method: 'POST' });
+            const data = await res.json();
+            document.getElementById('contador').textContent = data.valor;
+        }
+
+        carregarStatus();
+        carregarContador();
+    </script>
+</body>
+</html>
+
